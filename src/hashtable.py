@@ -1,5 +1,5 @@
 # '''
-# Linked List hash table key/value pair  
+# Linked List hash table key/value pair
 # '''
 class LinkedPair:
     def __init__(self, key, value):
@@ -51,8 +51,9 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
-
+        index = self._hash_mod(key)
+        pair = LinkedPair(key, value)
+        self.storage[index] = pair
 
 
     def remove(self, key):
@@ -74,7 +75,11 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        if pair.key in self.storage[index]:
+            return pair.value
+        else:
+            return None
 
 
     def resize(self):
