@@ -64,7 +64,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        pair = self.storage[index]
+        if pair:
+            pair = None
+        else:
+            print("WARNING: Key not found.")
 
 
     def retrieve(self, key):
@@ -76,8 +81,9 @@ class HashTable:
         Fill this in.
         '''
         index = self._hash_mod(key)
-        if pair.key in self.storage[index]:
-            return pair.value
+        pair = self.storage[index]
+        if pair:
+            return pair
         else:
             return None
 
