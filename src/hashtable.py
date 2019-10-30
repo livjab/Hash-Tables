@@ -7,6 +7,10 @@ class LinkedPair:
         self.value = value
         self.next = None
 
+class LinkedList:
+    def __init__(self, head=None):
+        self.head = head
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
@@ -15,7 +19,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
-
+        self.linked_list = LinkedList()
 
     def _hash(self, key):
         '''
@@ -53,7 +57,27 @@ class HashTable:
         '''
         index = self._hash_mod(key)
         pair = LinkedPair(key, value)
-        self.storage[index] = pair
+        bucket = self.storage[index]
+        linked_list = LinkedList()
+        # check if bucket is empty. If so, add pair as head node
+        if bucket is None:
+            # Create a head node
+            new_node = LinkedPair(pair, linked_list.head)
+            # Set current head to new node
+            linked_list.head = new_node
+        else:
+            # check if key already exists in bucket
+            current_node = linked_list.head
+            while(current_node):
+                if current_node.value.key == key:
+                    current_node.value.value = value
+                    return
+
+                current_node = current_node.next
+
+            # if new key, add to linked List as head
+            new_node = LinkedPair(pair, linked_list.head)
+            linked_list.head = new_node
 
 
     def remove(self, key):
@@ -66,10 +90,34 @@ class HashTable:
         '''
         index = self._hash_mod(key)
         pair = self.storage[index]
-        if pair:
-            pair = None
+        #if pair:
+        #    pair = None
+        #else:
+        #    print("WARNING: Key not found.")
+        # If we have no head
+        if not linked_list.head:
+            # print an error and return
+            print("Error: Value not found")
+        # If the head has our value
+        elif linked_list.head.value == value:
+            # Remove the head by pointing self.head to head.next
+            linked_list.head = linked_list.head.next
+        # Else
         else:
-            print("WARNING: Key not found.")
+            # Keep track of the parent node
+            parent = linked_list.head
+            current = linked_list.head.next
+            # Walk through the linked list until we find a matching value
+            while current:
+                # If we find a matching value
+                if current.value == value:
+                    # Delete the node by pointing parent.next to node.next
+                    parent.next = current.next
+                    return
+
+                current = current.next
+            # If we get to the end and have not found the value, print error
+            print("Error: Value not found")
 
 
     def retrieve(self, key):
@@ -82,11 +130,16 @@ class HashTable:
         '''
         index = self._hash_mod(key)
         pair = self.storage[index]
-        if pair:
-            return pair
-        else:
-            return None
 
+        current_node = self.linked_list.head
+
+        while(current_node):
+            if current_node.value.key == key:
+                return current_node.value.value
+
+            current_node = current_node.next
+
+        return None
 
     def resize(self):
         '''
@@ -95,7 +148,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
+        new_storage = [None] * self.capacity
+        # Copy old items to new storage
+        for i in range(self.capacity):
+            new_storage[i] = self.storage[i]
+        # Point storage to the new storage
+        self.storage = new_storage
 
 
 
