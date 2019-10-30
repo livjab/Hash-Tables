@@ -58,9 +58,14 @@ class HashTable:
             self.storage[index] = LinkedPair(key, value)
             return
 
+
         # collision
         prev = pair
         while pair is not None:
+            # overwrite value if key already exists
+            if pair.key == key:
+                pair.value = value
+
             prev = pair
             pair = pair.next
 
@@ -79,21 +84,20 @@ class HashTable:
         pair = self.storage[index]
         prev = None
 
+        # iterate throught bucket
         while pair is not None and pair.key != key:
             prev = pair
             pair = pair.next
 
+        # If not found print warning
         if pair is None:
-            return None
+            print("Warning, Key not found.")
 
         else:
-            result = pair.value
             if prev is None:
                 pair = None
             else:
                 prev.next = prev.next.next
-
-            return result
 
 
     def retrieve(self, key):
@@ -107,12 +111,14 @@ class HashTable:
         index = self._hash_mod(key)
         pair = self.storage[index]
 
+        # check through linked list
         while pair is not None and pair.key != key:
             pair = pair.next
 
+        # If not found retrun None
         if pair is None:
             return None
-
+        # Else return value
         else:
             return pair.value
 
@@ -124,13 +130,21 @@ class HashTable:
         Fill this in.
         '''
         self.capacity *= 2
-        new_storage = [None] * self.capacity
-        # Copy old items to new storage
-        for i in range(self.capacity):
-            new_storage[i] = self.storage[i]
-        # Point storage to the new storage
-        self.storage = new_storage
+        old_storage = self.storage
+        self.storage = [None] * self.capacity
 
+        # for each bucket, rehash all items inside to new hash table
+        index = 0
+        while index < len(old_storage):
+            for bucket in old_storage:
+                if bucket is None:
+                    return
+
+                pair = old_storage[index]
+                while pair is not None:
+                    self.insert(pair.key, pair.value)
+                    pair = pair.next
+                index += 1
 
 
 if __name__ == "__main__":
