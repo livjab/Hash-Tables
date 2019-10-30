@@ -7,6 +7,10 @@ class LinkedPair:
         self.value = value
         self.next = None
 
+#class LinkedList:
+#    def __init__(self, head=None):
+#        self.head = head
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
@@ -15,6 +19,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
+        #self.linked_list = LinkedList()
 
     def _hash(self, key):
         '''
