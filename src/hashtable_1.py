@@ -7,6 +7,10 @@ class LinkedPair:
         self.value = value
         self.next = None
 
+#class LinkedList:
+#    def __init__(self, head=None):
+#        self.head = head
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
@@ -15,6 +19,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
+        #self.linked_list = LinkedList()
 
     def _hash(self, key):
         '''
@@ -58,14 +63,9 @@ class HashTable:
             self.storage[index] = LinkedPair(key, value)
             return
 
-
         # collision
         prev = pair
         while pair is not None:
-            # overwrite value if key already exists
-            if pair.key == key:
-                pair.value = value
-
             prev = pair
             pair = pair.next
 
@@ -84,22 +84,21 @@ class HashTable:
         pair = self.storage[index]
         prev = None
 
-        # iterate throught bucket
         while pair is not None and pair.key != key:
             prev = pair
             pair = pair.next
 
-        # If not found print warning
         if pair is None:
-            print("Warning, Key not found.")
+            return None
 
         else:
-            if prev is not None:
-                # adjust pointers to next node
-                prev.next = pair.next
+            result = pair.value
+            if prev is None:
+                pair = None
             else:
-                # if head of list, replace with none
-                self.storage[index] = pair.next
+                prev.next = prev.next.next
+
+            return result
 
 
     def retrieve(self, key):
@@ -113,14 +112,12 @@ class HashTable:
         index = self._hash_mod(key)
         pair = self.storage[index]
 
-        # check through linked list
         while pair is not None and pair.key != key:
             pair = pair.next
 
-        # If not found retrun None
         if pair is None:
             return None
-        # Else return value
+
         else:
             return pair.value
 
@@ -132,14 +129,13 @@ class HashTable:
         Fill this in.
         '''
         self.capacity *= 2
-        old_storage = self.storage
-        self.storage = [None] * self.capacity
+        new_storage = [None] * self.capacity
+        # Copy old items to new storage
+        for i in range(self.capacity):
+            new_storage[i] = self.storage[i]
+        # Point storage to the new storage
+        self.storage = new_storage
 
-        for bucket in old_storage:
-            pair = bucket
-            while pair is not None:
-                self.insert(pair.key, pair.value)
-                pair = pair.next
 
 
 if __name__ == "__main__":
