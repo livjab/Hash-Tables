@@ -94,10 +94,12 @@ class HashTable:
             print("Warning, Key not found.")
 
         else:
-            if prev is None:
-                pair = None
+            if prev is not None:
+                # adjust pointers to next node
+                prev.next = pair.next
             else:
-                prev.next = prev.next.next
+                # if head of list, replace with none
+                self.storage[index] = pair.next
 
 
     def retrieve(self, key):
@@ -133,18 +135,11 @@ class HashTable:
         old_storage = self.storage
         self.storage = [None] * self.capacity
 
-        # for each bucket, rehash all items inside to new hash table
-        index = 0
-        while index < len(old_storage):
-            for bucket in old_storage:
-                if bucket is None:
-                    return
-
-                pair = old_storage[index]
-                while pair is not None:
-                    self.insert(pair.key, pair.value)
-                    pair = pair.next
-                index += 1
+        for bucket in old_storage:
+            pair = bucket
+            while pair is not None:
+                self.insert(pair.key, pair.value)
+                pair = pair.next
 
 
 if __name__ == "__main__":
